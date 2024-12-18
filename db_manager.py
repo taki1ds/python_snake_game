@@ -144,3 +144,32 @@ def display_player_results():
         pygame.display.flip()
         clock.tick(30)  # Limit FPS for smooth scrolling
 
+def display_winner_screen(winner_name, loser_name, winner_score, loser_score):
+    running = True
+    while running:
+        screen.fill(BLACK)
+
+        # Display winner message
+        winner_text = font.render(f"{winner_name} Wins!", True, YELLOW)
+        screen.blit(winner_text, (WIDTH // 2 - winner_text.get_width() // 2, HEIGHT // 4))
+
+        # Display scores
+        score_text1 = font.render(f"{winner_name}: {winner_score}", True, WHITE)
+        screen.blit(score_text1, (WIDTH // 2 - score_text1.get_width() // 2, HEIGHT // 2 - 40))
+
+        score_text2 = font.render(f"{loser_name}: {loser_score}", True, WHITE)
+        screen.blit(score_text2, (WIDTH // 2 - score_text2.get_width() // 2, HEIGHT // 2 + 40))
+
+        # Instructions to exit
+        exit_text = font.render("Press ENTER to return to the scoreboard", True, GREEN)
+        screen.blit(exit_text, (WIDTH // 2 - exit_text.get_width() // 2, HEIGHT - 100))
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                exit()
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN:
+                running = False
+
+        pygame.display.flip()
+        clock.tick(30)
