@@ -99,31 +99,48 @@ def get_player_names():
 
 def display_player_results():
     running = True
+    scroll_offset = 0  # Initial scroll offset
+    scroll_step = 40  # Amount to scroll per key press
+    max_scroll = 0  # Dynamically adjust based on player count
+
     while running:
         screen.fill(BLACK)
 
         title_text = font.render("Player Stats", True, WHITE)
         screen.blit(title_text, (WIDTH // 2 - title_text.get_width() // 2, 50))
 
-        players = players_collection.find().sort("wins", -1)  # Sort by wins descending
-        y_offset = 150  # Starting Y position for player stats
+        # Retrieve players and sort them by wins descending
+        players = list(players_collection.find().sort("wins", -1))
+        y_offset = 150 - scroll_offset  # Starting Y position adjusted by scroll offset
 
+        # Calculate the maximum scrollable offset
+        max_scroll = max(0, (len(players) * scroll_step) - (HEIGHT - 300))  # 300 for title and instructions
+
+        # Render player stats
         for player in players:
             player_stats = f"{player['name']} - Wins: {player['wins']}, Losses: {player['losses']}, Total Score: {player['total_score']}"
             stats_text = input_font.render(player_stats, True, WHITE)
-            screen.blit(stats_text, (50, y_offset))
-            y_offset += 40  # Increment Y position for the next player
+            if 150 <= y_offset <= HEIGHT - 150:  # Only render visible items
+                screen.blit(stats_text, (50, y_offset))
+            y_offset += scroll_step
 
+        # Render instructions
         instructions_text = font.render("Press ENTER to start the game", True, YELLOW)
         screen.blit(instructions_text, (WIDTH // 2 - instructions_text.get_width() // 2, HEIGHT - 100))
 
+        # Event handling for scrolling and exiting
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 exit()
-            if event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN:  # ENTER key stops the loop
-                running = False  # Exit the loop to start the game
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_RETURN:  # Start game on ENTER
+                    running = False
+                if event.key == pygame.K_UP:  # Scroll up
+                    scroll_offset = max(0, scroll_offset - scroll_step)
+                if event.key == pygame.K_DOWN:  # Scroll down
+                    scroll_offset = min(max_scroll, scroll_offset + scroll_step)
 
         pygame.display.flip()
-        clock.tick(30)  # Limit FPS for smooth rendering
+        clock.tick(30)  # Limit FPS for smooth scrolling
 

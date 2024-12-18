@@ -18,7 +18,7 @@ def main():
     snake1 = Snake(GREEN, (100, 100), {'up': pygame.K_UP, 'down': pygame.K_DOWN, 'left': pygame.K_LEFT, 'right': pygame.K_RIGHT})
     snake2 = Snake(PURPLE, (400, 100), {'up': pygame.K_w, 'down': pygame.K_s, 'left': pygame.K_a, 'right': pygame.K_d})
 
-    fruits = [Fruit(random.choice(['normal', 'boost', 'lengthen'])) for _ in range(5)]  # 5 fruits on the board
+    fruits = [Fruit(random.choice(['normal', 'boost', 'lengthen'])) for _ in range(5)]
     running = True
 
     while running:
@@ -27,23 +27,9 @@ def main():
                 running = False
 
         keys = pygame.key.get_pressed()
-        if keys[snake1.controls['up']]:
-            snake1.change_direction((0, -BLOCK_SIZE))
-        if keys[snake1.controls['down']]:
-            snake1.change_direction((0, BLOCK_SIZE))
-        if keys[snake1.controls['left']]:
-            snake1.change_direction((-BLOCK_SIZE, 0))
-        if keys[snake1.controls['right']]:
-            snake1.change_direction((BLOCK_SIZE, 0))
-
-        if keys[snake2.controls['up']]:
-            snake2.change_direction((0, -BLOCK_SIZE))
-        if keys[snake2.controls['down']]:
-            snake2.change_direction((0, BLOCK_SIZE))
-        if keys[snake2.controls['left']]:
-            snake2.change_direction((-BLOCK_SIZE, 0))
-        if keys[snake2.controls['right']]:
-            snake2.change_direction((BLOCK_SIZE, 0))
+        
+        snake1.key_action(keys)
+        snake2.key_action(keys)
 
         snake1.move()
         snake2.move()
@@ -62,15 +48,15 @@ def main():
         for fruit in fruits[:]:
             if snake1.body[0] == (fruit.x, fruit.y):
                 fruit.effect(snake1)
-                fruits.remove(fruit)  # Remove the fruit after it is eaten
-                fruits.append(Fruit(random.choice(['normal', 'boost', 'lengthen'])))  # Spawn a new fruit
+                fruits.remove(fruit) 
+                fruits.append(Fruit(random.choice(['normal', 'boost', 'lengthen'])))
 
             if snake2.body[0] == (fruit.x, fruit.y):
                 fruit.effect(snake2)
                 fruits.remove(fruit)
                 fruits.append(Fruit(random.choice(['normal', 'boost', 'lengthen'])))
 
-        # Draw everything
+       
         screen.fill(BLACK)
         snake1.draw(screen)
         snake2.draw(screen)
@@ -78,7 +64,7 @@ def main():
         for fruit in fruits:
             fruit.draw(screen)
 
-        # Display scores
+  
         score_text1 = font.render(f"{player1_name}: {snake1.get_score()}", True, WHITE)
         score_text2 = font.render(f"{player2_name}: {snake2.get_score()}", True, WHITE)
         screen.blit(score_text1, (10, 10))
